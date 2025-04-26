@@ -17,10 +17,7 @@ router.post('/login', [AuthController, 'loginPost'])
 
 router.get('/logout', [AuthController, 'logout'])
 
-router
-  .get('/signup', [AuthController, 'signUpPage'])
-  .as('signupPage')
-  .middleware([middleware.auth()])
+router.get('/signup', [AuthController, 'signUpPage']).as('signupPage')
 
 router.post('/signup', [AuthController, 'signUpPost'])
 

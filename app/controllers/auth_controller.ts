@@ -10,17 +10,29 @@ export default class AuthController {
       return ctx.response.redirect().toRoute('dashboardPage')
     }
 
+    const loginError = ctx.session.get('loginError')
+
+    console.log({ loginError })
+
     return ctx.inertia.render('auth/login')
   }
 
   async loginPost(ctx: HttpContext) {
-    const { email, password } = ctx.request.only(['email', 'password'])
+    try {
+      const { email, password } = ctx.request.only(['email', 'password'])
 
-    const user = await User.verifyCredentials(email, password)
+      const user = await User.verifyCredentials(email, password)
 
-    await ctx.auth.use('web').login(user)
+      console.log(user)
 
-    return ctx.response.redirect().toRoute('dashboardPage')
+      await ctx.auth.use('web').login(user)
+
+      return ctx.response.redirect().toRoute('dashboardPage')
+    } catch (error) {
+      if (error && error.code && error.code === 'E_INVALID_CREDENTIALS') {
+        return ctx.response.status(400).send({ error: 'Wrong Email/Password combination' })
+      }
+    }
   }
 
   async signUpPage(ctx: HttpContext) {

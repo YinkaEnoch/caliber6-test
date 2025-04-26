@@ -4,6 +4,14 @@ import { createSignal } from 'solid-js'
 import { router } from 'inertia-adapter-solid'
 
 export default function Home() {
+  const [errorMessage, setErrorMessage] = createSignal('')
+
+  // Intercept for error messages
+  router.on('invalid', (ev) => {
+    ev.preventDefault()
+    setErrorMessage(ev.detail.response.data.error)
+  })
+
   const [values, setValues] = createSignal({
     email: '',
     password: '',
@@ -21,17 +29,16 @@ export default function Home() {
 
   // Submit form
   const formHandler = (ev: Event) => {
-    ev.preventDefault()
+    try {
+      ev.preventDefault()
 
-    console.log({
-      email: values().email,
-      password: values().password,
-    })
-
-    router.post('/login', {
-      email: values().email,
-      password: values().password,
-    })
+      router.post('/login', {
+        email: values().email,
+        password: values().password,
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -39,6 +46,7 @@ export default function Home() {
       <Meta title="Login" />
 
       <AuthLayout title="Login" subTitle="Login to your account">
+        <p class="text-red-500 mt-2 text-center">{errorMessage()}</p>
         <form onSubmit={formHandler}>
           <div class="divide-y divide-gray-200">
             <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
