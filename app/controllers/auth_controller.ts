@@ -10,10 +10,6 @@ export default class AuthController {
       return ctx.response.redirect().toRoute('dashboardPage')
     }
 
-    const loginError = ctx.session.get('loginError')
-
-    console.log({ loginError })
-
     return ctx.inertia.render('auth/login')
   }
 
@@ -22,8 +18,6 @@ export default class AuthController {
       const { email, password } = ctx.request.only(['email', 'password'])
 
       const user = await User.verifyCredentials(email, password)
-
-      console.log(user)
 
       await ctx.auth.use('web').login(user)
 
