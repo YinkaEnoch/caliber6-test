@@ -3,8 +3,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
   async loginPage(ctx: HttpContext) {
+    // Check if user is already logged in
+    await ctx.auth.check()
+
     const isAuthenticated = ctx.auth.isAuthenticated
-    console.log({ isAuthenticated, page: 'login' })
 
     if (isAuthenticated) {
       return ctx.response.redirect().toRoute('dashboardPage')
